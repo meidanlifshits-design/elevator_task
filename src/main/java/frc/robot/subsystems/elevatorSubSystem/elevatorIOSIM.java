@@ -20,7 +20,7 @@ public class elevatorIOSIM extends elevatorIOCTRE{
             DCMotor.getKrakenX60(1),
             elevatorConstants.ELEVATOR_MOTOR_SIM_MOI,
             elevatorConstants.GEAR_RATIO),
-                DCMotor.getKrakenX60(1));
+                DCMotor.getKrakenX60(1));//J_LOAD
     }
     @Override
     public void updateInputs(elevatorIOInputs inputs){
