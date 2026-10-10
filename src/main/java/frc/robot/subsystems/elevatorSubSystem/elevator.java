@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.elevatorSubSystem.elevatorIO.elevatorIOInputs;
 
+import org.littletonrobotics.junction.Logger;
+
 import java.security.Timestamp;
 
 import org.littletonrobotics.junction.Logger;
@@ -20,6 +22,7 @@ public class elevator extends SubsystemBase {
         IDLE
     }
     private double setPoint = 0;
+    double clampedSetPoint;
     
     private elevatorSubSystemState wantedSystemState = elevatorSubSystemState.IDLE;
     private elevatorSubSystemState currentSystemState = elevatorSubSystemState.IDLE;
@@ -32,57 +35,43 @@ public class elevator extends SubsystemBase {
     @Override
     public void periodic(){
         io.updateInputs(inputs);
-        double positionInMeters = (inputs.position*elevatorConstants.GEAR_RATIO)*(Math.PI*elevatorConstants.RATIO)/100;
+        double positionInMeters = inputs.position*elevatorConstants.RATIO;
+        
         SmartDashboard.putNumber("positionInMeters", positionInMeters);
         SmartDashboard.putNumber("setPoint", setPoint);
         Logger.processInputs("Elevator", inputs);
-        Logger.recordOutput("setPoint",setPoint);
+        Logger.recordOutput("elevator state", currentSystemState);
 
         
-        // if (inputs.velocity<elevatorConstants.VELOCITY_TRASHOLD_RPS &&
-        //  inputs.current>elevatorConstants.CURRENT_TRASHOLD_AMPS){
-        //     io.stopElevatorMotor();//take care of this,slow down
-            
-        // }
         handleStateTransition();
         switch(currentSystemState){
             case IDLE:
-                System.out.println("elevator is idle");
                 setPoint = elevatorConstants.IDLE_MODE_HEIGHT;
+                io.setHeight(setPoint);
                 break;
             case L1:
-                System.out.println("elevator is in collect mode");
                 setPoint = elevatorConstants.L1_HEIGHT;
+                io.setHeight(setPoint);
                 break;
             case L2:
-                System.out.println("elevator is in middle mode");
                 setPoint = elevatorConstants.L2_HEIGHT;
+                io.setHeight(setPoint);
                 break;
             case L3:
                 setPoint = elevatorConstants.L3_HEIGHT;
-                System.out.println("elevator is in max mode");
+                io.setHeight(setPoint);
                 break;
             case L4:
                 setPoint = elevatorConstants.L4_HEIGHT;
-                System.out.println("L4");
+                io.setHeight(setPoint);
                 break;
             
             }
-            double ClampedSetPoint = MathUtil.clamp(setPoint, elevatorConstants.MIN_SOFT_LIMIT_CM, elevatorConstants.MAX_SOFT_LIMIT_CM);
-            if (elevatorConstants.MAX_SOFT_LIMIT_CM>positionInMeters || elevatorConstants.MIN_SOFT_LIMIT_CM<positionInMeters){
-                if (Math.abs( inputs.velocity) < elevatorConstants.VELOCITY_TRASHOLD_RPS &&
-                Math.abs(inputs.current)>elevatorConstants.CURRENT_TRASHOLD_AMPS){
-                    io.elevatorLowPid(positionInMeters, ClampedSetPoint);//not good solution,
-            
-                }
-                else{
-                    io.elevatorPid(positionInMeters, ClampedSetPoint);
-                }
-        }
+           
+        
     }
         private void handleStateTransition(){
             currentSystemState = wantedSystemState;
-            //return wantedSystemState;
         }
         public void setWantedState(elevatorSubSystemState wantedSystemState){
             this.wantedSystemState = wantedSystemState;

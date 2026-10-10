@@ -3,26 +3,55 @@ package frc.robot.subsystems.elevatorSubSystem;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
+
 
 public class elevatorIOCTRE implements elevatorIO{
+    protected final TalonFX elevatorMotor = new TalonFX(0);
+    private final PositionVoltage positionRequest = new PositionVoltage(0.0).withSlot(0);
 
     private BaseStatusSignal positionSignal;
     private BaseStatusSignal velocitySignal;
     private BaseStatusSignal currentSignal;
     private BaseStatusSignal[] signals;
-    protected final TalonFX elevatorMotor;
-    PIDController pid = new PIDController(elevatorConstants.KP, elevatorConstants.KI, elevatorConstants.KD);
-    PIDController lowPid = new PIDController(elevatorConstants.LOW_KP, elevatorConstants.LOW_KI, elevatorConstants.LOW_KD);
+    double setPointRots;
+    
+
     public elevatorIOCTRE(){
-        elevatorMotor = new TalonFX(0);
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        elevatorMotor.setPosition(0);
+        config.Slot0.kP = elevatorConstants.KP;
+        config.Slot0.kD = elevatorConstants.KD;
+        config.Slot0.kI = elevatorConstants.KI;
+        config.Slot0.kG = elevatorConstants.KG;
+        config.Slot0.kV = elevatorConstants.KV;
+        config.Slot0.kA = elevatorConstants.KA;
+
+
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = elevatorConstants.MAX_SOFT_LIMIT_M/elevatorConstants.RATIO;
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = elevatorConstants.MIN_SOFT_LIMIT_M/elevatorConstants.RATIO;  
+        config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;//connect to the elevator,bring her up,see if position is getting smaller or bigger.if the elevator position is getting bigger when going up,the current inverted position is correct,cause thats wht we need
+        config.CurrentLimits.StatorCurrentLimit = 60;      
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 40;  
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        elevatorMotor.getConfigurator().apply(config);
 
         positionSignal = elevatorMotor.getPosition();
         velocitySignal = elevatorMotor.getVelocity();
         currentSignal  = elevatorMotor.getStatorCurrent();
         
+    
         signals = new BaseStatusSignal[]{
             positionSignal,
             velocitySignal,
@@ -31,14 +60,14 @@ public class elevatorIOCTRE implements elevatorIO{
 
     }
     @Override
-    public void elevatorPid(double position, double  setPoint){
-        elevatorMotor.set(pid.calculate((position),setPoint));
+    public void setHeight(double setPoint){
+        double clampedSetPoint = MathUtil.clamp(setPoint, elevatorConstants.MIN_SOFT_LIMIT_M, elevatorConstants.MAX_SOFT_LIMIT_M);
+        setPointRots = (clampedSetPoint/elevatorConstants.RATIO);
+        elevatorMotor.setControl(positionRequest.withPosition(setPointRots));
+        
         
     }
-    @Override
-    public void elevatorLowPid(double position, double setPoint){
-        elevatorMotor.set(lowPid.calculate(position,setPoint));
-    }
+    
     @Override
     public void stopElevatorMotor(){
         elevatorMotor.stopMotor();
@@ -51,7 +80,7 @@ public class elevatorIOCTRE implements elevatorIO{
         inputs.position = positionSignal.getValueAsDouble();
         inputs.velocity = velocitySignal.getValueAsDouble();
         inputs.current = currentSignal.getValueAsDouble();
-        //inputs.setPoint = setPoint.getValueAsDouble();
+        inputs.setPoint = setPointRots;
     }
     
 }

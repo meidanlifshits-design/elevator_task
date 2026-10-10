@@ -41,8 +41,11 @@ public class RobotContainer {
         Commands.runOnce(() -> Elevator.setWantedState(elevatorSubSystemState.L2), Elevator)
     );
     p.square().onTrue(
-        Commands.runOnce(() -> Elevator.setWantedState(elevatorSubSystemState.L3), Elevator)
-    );
+        Commands.runOnce(() -> Elevator.setWantedState(elevatorSubSystemState.L3), Elevator));
+  
+    p.L2().onTrue(
+        Commands.runOnce(() -> Elevator.setWantedState(elevatorSubSystemState.IDLE), Elevator));
+    
   }
 
   public Command getAutonomousCommand() {

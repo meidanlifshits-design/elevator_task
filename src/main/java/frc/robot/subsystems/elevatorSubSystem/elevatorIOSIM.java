@@ -20,7 +20,7 @@ public class elevatorIOSIM extends elevatorIOCTRE{
             DCMotor.getKrakenX60(1),
             elevatorConstants.ELEVATOR_MOTOR_SIM_MOI,
             elevatorConstants.GEAR_RATIO),
-                DCMotor.getKrakenX60(1));//J_LOAD
+                DCMotor.getKrakenX60(1));
     }
     @Override
     public void updateInputs(elevatorIOInputs inputs){
@@ -32,10 +32,10 @@ public class elevatorIOSIM extends elevatorIOCTRE{
         elevatorMotorPhysicsSim.setInputVoltage(elevatorMotorSim.getMotorVoltage());
         elevatorMotorPhysicsSim.update(0.02);
         double positionInRads = elevatorMotorPhysicsSim.getAngularPositionRad();
-        double positionInRots = positionInRads/(2*Math.PI)*elevatorConstants.GEAR_RATIO;
+        double motorPositionInRots = positionInRads/(2*Math.PI)*elevatorConstants.GEAR_RATIO;//position of mechanism * gear ratio gives the motor position
         double velocityInRads = elevatorMotorPhysicsSim.getAngularVelocityRadPerSec();
         double velocityInRps = velocityInRads/(2*Math.PI)*elevatorConstants.GEAR_RATIO;
-        elevatorMotorSim.setRawRotorPosition(positionInRots);
+        elevatorMotorSim.setRawRotorPosition(motorPositionInRots);
         elevatorMotorSim.setRotorVelocity(velocityInRps);
     }
 }

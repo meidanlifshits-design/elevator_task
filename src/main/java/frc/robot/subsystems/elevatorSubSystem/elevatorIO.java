@@ -3,9 +3,9 @@ package frc.robot.subsystems.elevatorSubSystem;
 import org.littletonrobotics.junction.AutoLog;
 
 
+
 public interface elevatorIO {
-    default void elevatorPid(double position,double setPoint) {}
-    default void elevatorLowPid(double position,double setPoint) {}
+    default void setHeight(double setPoint) {}
     default void stopElevatorMotor() {}
     default void updateInputs(elevatorIOInputs inputs) {}
 
