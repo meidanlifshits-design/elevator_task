@@ -22,8 +22,10 @@ public class elevator extends SubsystemBase {
     
     private elevatorSubSystemState wantedSystemState = elevatorSubSystemState.IDLE;
     private elevatorSubSystemState currentSystemState = elevatorSubSystemState.IDLE;
+    
     private final elevatorIO io;
     private final elevatorIOInputsAutoLogged inputs = new elevatorIOInputsAutoLogged();
+
     public elevator(elevatorIO io){
         this.io = io;
     }
@@ -36,44 +38,41 @@ public class elevator extends SubsystemBase {
         SmartDashboard.putNumber("positionInMeters", positionInMeters);
         SmartDashboard.putNumber("setPoint", setPoint);
         Logger.processInputs("Elevator", inputs);
+        Logger.recordOutput("setpoint",setPoint);
         Logger.recordOutput("elevator state", currentSystemState);
 
-        
         handleStateTransition();
         switch(currentSystemState){
             case IDLE:
                 setPoint = elevatorConstants.IDLE_MODE_HEIGHT;
                 io.setHeight(setPoint);
                 break;
+
             case L1:
                 setPoint = elevatorConstants.L1_HEIGHT;
                 io.setHeight(setPoint);
                 break;
+
             case L2:
                 setPoint = elevatorConstants.L2_HEIGHT;
                 io.setHeight(setPoint);
                 break;
+
             case L3:
                 setPoint = elevatorConstants.L3_HEIGHT;
                 io.setHeight(setPoint);
                 break;
+
             case L4:
                 setPoint = elevatorConstants.L4_HEIGHT;
                 io.setHeight(setPoint);
                 break;
-            
             }
-           
-        
     }
-        private void handleStateTransition(){
-            currentSystemState = wantedSystemState;
-        }
-        public void setWantedState(elevatorSubSystemState wantedSystemState){
-            this.wantedSystemState = wantedSystemState;
-        }
-        
-
-    
-
+    private void handleStateTransition(){
+        currentSystemState = wantedSystemState;
+    }
+    public void setWantedState(elevatorSubSystemState wantedSystemState){
+        this.wantedSystemState = wantedSystemState;
+    }
 }

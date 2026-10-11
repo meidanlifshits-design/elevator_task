@@ -3,7 +3,6 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface elevatorIO {
     default void setHeight(double setPoint) {}
-    default void stopElevatorMotor() {}
     default void updateInputs(elevatorIOInputs inputs) {}
 
     @AutoLog
@@ -11,7 +10,6 @@ public interface elevatorIO {
         public double position = 0;
         public double velocity = 0;
         public double current =  0;
-        public double setPoint = 0;
     }
     
 }
