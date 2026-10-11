@@ -1,18 +1,14 @@
 package frc.robot.subsystems.elevatorSubSystem;
-
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.elevatorSubSystem.elevatorIO.elevatorIOInputs;
-
 import org.littletonrobotics.junction.Logger;
-
 import java.security.Timestamp;
-
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
+
 public class elevator extends SubsystemBase {
     public enum elevatorSubSystemState{
         L1,

@@ -3,10 +3,10 @@ package frc.robot.subsystems.elevatorSubSystem;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 public class elevatorConstants {
-    public static final double MAX_SOFT_LIMIT_M=1.2;
+    public static final double MAX_SOFT_LIMIT_M=1.4;
     public static final double MIN_SOFT_LIMIT_M=0;
 
-    public static final double KP = 0.1;//i need take care of these values
+    public static final double KP = 0.5;//i need take care of these values
     public static final double KI = 0.00;
     public static final double KD = 0;
     public static final double KG=0;

@@ -1,8 +1,5 @@
 package frc.robot.subsystems.elevatorSubSystem;
-
 import org.littletonrobotics.junction.AutoLog;
-
-
 
 public interface elevatorIO {
     default void setHeight(double setPoint) {}

@@ -3,19 +3,18 @@ package frc.robot.subsystems.elevatorSubSystem;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-
 import edu.wpi.first.math.MathUtil;
-
 
 public class elevatorIOCTRE implements elevatorIO{
     protected final TalonFX elevatorMotor = new TalonFX(0);
-    private final PositionVoltage positionRequest = new PositionVoltage(0.0).withSlot(0);
-
+    private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
+    
     private BaseStatusSignal positionSignal;
     private BaseStatusSignal velocitySignal;
     private BaseStatusSignal currentSignal;
@@ -40,11 +39,13 @@ public class elevatorIOCTRE implements elevatorIO{
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = elevatorConstants.MIN_SOFT_LIMIT_M/elevatorConstants.RATIO;  
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;//connect to the elevator,bring her up,see if position is getting smaller or bigger.if the elevator position is getting bigger when going up,the current inverted position is correct,cause thats wht we need
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.CurrentLimits.StatorCurrentLimit = 60;      
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit = 40;  
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.MotionMagic.MotionMagicCruiseVelocity = 0.4/elevatorConstants.RATIO;  // understand why do you need it
+        config.MotionMagic.MotionMagicAcceleration = 0.4/elevatorConstants.RATIO;//use the rollout furmula and write it
         elevatorMotor.getConfigurator().apply(config);
 
         positionSignal = elevatorMotor.getPosition();
@@ -63,7 +64,7 @@ public class elevatorIOCTRE implements elevatorIO{
     public void setHeight(double setPoint){
         double clampedSetPoint = MathUtil.clamp(setPoint, elevatorConstants.MIN_SOFT_LIMIT_M, elevatorConstants.MAX_SOFT_LIMIT_M);
         setPointRots = (clampedSetPoint/elevatorConstants.RATIO);
-        elevatorMotor.setControl(positionRequest.withPosition(setPointRots));
+        elevatorMotor.setControl(motionMagicRequest.withPosition(setPointRots));
         
         
     }
