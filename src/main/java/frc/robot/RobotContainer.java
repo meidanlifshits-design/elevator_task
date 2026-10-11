@@ -7,24 +7,24 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import frc.robot.subsystems.elevatorSubSystem.elevator;
+import frc.robot.subsystems.elevatorSubSystem.Elevator;
 import frc.robot.subsystems.elevatorSubSystem.elevatorIOCTRE;
 import frc.robot.subsystems.elevatorSubSystem.elevatorIOSIM;
-import frc.robot.subsystems.elevatorSubSystem.elevator.elevatorSubSystemState;
+import frc.robot.subsystems.elevatorSubSystem.Elevator.elevatorSubSystemState;
 
 
 public class RobotContainer {
     public final CommandPS5Controller p = new CommandPS5Controller(0);
 
 
-  public elevator Elevator;
+  public Elevator Elevator;
   public RobotContainer() {
 
     if (Robot.isReal()){
-      Elevator = new elevator(new elevatorIOCTRE());
+      Elevator = new Elevator(new elevatorIOCTRE());
     }
     else{
-      Elevator = new elevator(new elevatorIOSIM());
+      Elevator = new Elevator(new elevatorIOSIM());
     }
     configureBindings();
 

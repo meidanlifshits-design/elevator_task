@@ -4,10 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.elevatorSubSystem.elevator.elevatorSubSystemState;
+import frc.robot.subsystems.elevatorSubSystem.Elevator.elevatorSubSystemState;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
